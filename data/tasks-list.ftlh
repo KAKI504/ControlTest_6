@@ -9,9 +9,10 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f9f9f9;
         }
 
         h1, h2 {
@@ -20,6 +21,8 @@
 
         .nav-links {
             margin: 20px 0;
+            display: flex;
+            gap: 10px;
         }
 
         .button {
@@ -33,10 +36,18 @@
             border: none;
             cursor: pointer;
             font-size: 14px;
+            transition: background-color 0.2s;
         }
 
         .button:hover {
             background-color: #45a049;
+        }
+
+        .task-list-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .task-list {
@@ -47,7 +58,7 @@
 
         .task-list th {
             background-color: #f2f2f2;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             font-weight: bold;
             border: 1px solid #ddd;
@@ -55,7 +66,7 @@
 
         .task-list td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 12px;
             vertical-align: top;
         }
 
@@ -130,41 +141,43 @@
 
     <h1>Задачи на ${formattedDate}</h1>
 
-    <#if tasks?size gt 0>
-        <table class="task-list">
-            <thead>
-                <tr>
-                    <th>Название</th>
-                    <th>Описание</th>
-                    <th>Категория</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                <#list tasks as task>
+    <div class="task-list-container">
+        <#if tasks?size gt 0>
+            <table class="task-list">
+                <thead>
                     <tr>
-                        <td><strong>${task.title}</strong></td>
-                        <td>${task.description!''}</td>
-                        <td>
-                            <span class="task-tag task-${task.type?lower_case}">${task.type.displayName}</span>
-                        </td>
-                        <td class="action-buttons">
-                            <a href="/edit-task/${task.id}" class="button button-edit">Редактировать</a>
-                            <form action="/delete-task" method="post" style="display: inline;">
-                                <input type="hidden" name="id" value="${task.id}">
-                                <input type="hidden" name="date" value="${date}">
-                                <button type="submit" class="button button-delete">Удалить</button>
-                            </form>
-                        </td>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Категория</th>
+                        <th>Действия</th>
                     </tr>
-                </#list>
-            </tbody>
-        </table>
-    <#else>
-        <div class="empty-tasks">
-            <p>На этот день пока нет задач.</p>
-            <a href="/add-task?date=${date}" class="button">Создать задачу</a>
-        </div>
-    </#if>
+                </thead>
+                <tbody>
+                    <#list tasks as task>
+                        <tr>
+                            <td><strong>${task.title}</strong></td>
+                            <td>${task.description!''}</td>
+                            <td>
+                                <span class="task-tag task-${task.type?lower_case}">${task.type.displayName}</span>
+                            </td>
+                            <td class="action-buttons">
+                                <a href="/edit-task/${task.id}" class="button button-edit">Редактировать</a>
+                                <form action="/delete-task" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" value="${task.id}">
+                                    <input type="hidden" name="date" value="${date}">
+                                    <button type="submit" class="button button-delete">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </#list>
+                </tbody>
+            </table>
+        <#else>
+            <div class="empty-tasks">
+                <p>На этот день пока нет задач.</p>
+                <a href="/add-task?date=${date}" class="button">Создать задачу</a>
+            </div>
+        </#if>
+    </div>
 </body>
 </html>
