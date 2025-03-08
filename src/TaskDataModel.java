@@ -1,4 +1,3 @@
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -8,6 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,6 +32,7 @@ public class TaskDataModel {
     public TaskDataModel() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateAdapter());
+        gsonBuilder.registerTypeAdapter(Task.class, new TaskDeserializer());
         gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
 
@@ -59,6 +61,7 @@ public class TaskDataModel {
                 }
             } catch (Exception e) {
                 System.err.println("Ошибка при загрузке задач: " + e.getMessage());
+                e.printStackTrace();
                 tasks = new ArrayList<>();
             }
         } else {
@@ -151,6 +154,41 @@ public class TaskDataModel {
         if (index != -1) {
             tasks.set(index, task);
             saveTasks();
+        }
+    }
+
+    static class TaskDeserializer implements JsonDeserializer<Task> {
+        @Override
+        public Task deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+
+            String id = jsonObject.get("id").getAsString();
+            String name = jsonObject.has("name") ? jsonObject.get("name").getAsString() :
+                    (jsonObject.has("title") ? jsonObject.get("title").getAsString() : "");
+            String description = jsonObject.has("description") ? jsonObject.get("description").getAsString() : "";
+
+            LocalDate date = context.deserialize(jsonObject.get("date"), LocalDate.class);
+
+            Task.TaskType type;
+            if (jsonObject.has("category")) {
+                String categoryStr = jsonObject.get("category").getAsString();
+                if ("REGULAR".equals(categoryStr)) {
+                    type = Task.TaskType.NORMAL;
+                } else {
+                    try {
+                        type = Task.TaskType.valueOf(categoryStr);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Неизвестная категория: " + categoryStr + ", используем OTHER");
+                        type = Task.TaskType.OTHER;
+                    }
+                }
+            } else if (jsonObject.has("type")) {
+                type = context.deserialize(jsonObject.get("type"), Task.TaskType.class);
+            } else {
+                type = Task.TaskType.NORMAL;
+            }
+
+            return new Task(id, name, description, date, type);
         }
     }
 }
