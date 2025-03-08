@@ -12,6 +12,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f9f9f9;
         }
 
         h1 {
@@ -41,7 +42,7 @@
         }
 
         .form-container {
-            background-color: #f9f9f9;
+            background-color: #fff;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -59,7 +60,7 @@
 
         .form-control {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
@@ -67,21 +68,12 @@
         }
 
         textarea.form-control {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
 
         .form-actions {
             margin-top: 20px;
-            text-align: center;
-        }
-
-        .error-message {
-            color: #f44336;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ffebee;
-            border-radius: 4px;
             text-align: center;
         }
 
