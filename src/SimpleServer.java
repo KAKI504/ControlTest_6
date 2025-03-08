@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class SimpleServer {
     private final HttpServer server;
     private final Map<String, RouteHandler> routes = new HashMap<>();
@@ -25,7 +24,6 @@ public class SimpleServer {
     protected void registerPost(String route, RouteHandler handler) {
         routes.put("POST " + route, handler);
     }
-
 
     public void start() {
         server.setExecutor(null);
@@ -44,14 +42,11 @@ public class SimpleServer {
         void handle(HttpExchange exchange) throws IOException;
     }
 
-
     private class MainHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
-
-            System.out.println("Запрос: " + method + " " + path);
 
             String key = method + " " + path;
             RouteHandler handler = routes.get(key);
@@ -60,9 +55,12 @@ public class SimpleServer {
                 for (Map.Entry<String, RouteHandler> entry : routes.entrySet()) {
                     String routeKey = entry.getKey();
 
-                    if (routeKey.endsWith("/*") && path.startsWith(routeKey.substring(0, routeKey.length() - 1))) {
-                        handler = entry.getValue();
-                        break;
+                    if (routeKey.endsWith("/*")) {
+                        String prefix = routeKey.substring(0, routeKey.length() - 1);
+                        if (key.startsWith(prefix)) {
+                            handler = entry.getValue();
+                            break;
+                        }
                     }
                 }
             }
